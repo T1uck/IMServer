@@ -2,7 +2,9 @@ package com.xFly.IMServer.common.user.service.adapter;
 
 import cn.hutool.core.util.RandomUtil;
 import com.xFly.IMServer.common.user.domain.entity.User;
+import com.xFly.IMServer.common.user.domain.vo.Resp.UserInfoResp;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
+import org.springframework.beans.BeanUtils;
 
 /**
  * 用户适配器
@@ -27,5 +29,18 @@ public class UserAdapter {
             user.setName(userInfo.getNickname());
         }
         return user;
+    }
+
+    /**
+     * 构建用户信息返回
+     * @param user
+     * @param countByValidItemId
+     * @return
+     */
+    public static UserInfoResp buildUserInfoResp(User user, Integer countByValidItemId) {
+        UserInfoResp userInfoResp = new UserInfoResp();
+        BeanUtils.copyProperties(user, userInfoResp);
+        userInfoResp.setModifyNameChance(countByValidItemId);
+        return userInfoResp;
     }
 }

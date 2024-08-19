@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.util.Date;
 
 import lombok.*;
 
@@ -88,13 +89,13 @@ public class User implements Serializable {
      * 创建时间
      */
     @TableField("create_time")
-    private Data createTime;
+    private Date createTime;
 
     /**
      * 修改时间
      */
     @TableField("update_time")
-    private Data updateTime;
+    private Date updateTime;
 
 
 }

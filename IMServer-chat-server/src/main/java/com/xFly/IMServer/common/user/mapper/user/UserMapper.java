@@ -1,4 +1,4 @@
-package com.xFly.IMServer.common.user.mapper;
+package com.xFly.IMServer.common.user.mapper.user;
 
 import com.xFly.IMServer.common.user.domain.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
