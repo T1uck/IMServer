@@ -7,6 +7,8 @@ import com.xFly.IMServer.common.user.service.IUserBackpackService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  * 用户背包表 服务实现类
@@ -52,5 +54,18 @@ public class UserBackpackDao extends ServiceImpl<UserBackpackMapper, UserBackpac
                 .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
                 .set(UserBackpack::getStatus,YesOrNoEnum.YES.getStatus())
                 .update();
+    }
+
+    /**
+     * 获取用户拥有的徽章
+     * @param uid
+     * @param itemIds
+     * @return
+     */
+    public List<UserBackpack> getByItemIds(Long uid, List<Long> itemIds) {
+        return lambdaQuery().eq(UserBackpack::getId,uid)
+                .in(UserBackpack::getItemId,itemIds)
+                .eq(UserBackpack::getStatus,YesOrNoEnum.NO.getStatus())
+                .list();
     }
 }
