@@ -25,7 +25,7 @@ import java.util.List;
  * </p>
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/capi/user")
 @Api(tags = "用户管理相关接口")
 public class UserController {
     @Resource
@@ -37,7 +37,7 @@ public class UserController {
         return ApiResult.success(userService.getUserInfo(RequestHolder.get().getUid()));
     }
 
-    @PutMapping("/ModifyName")
+    @PutMapping("/modifyName")
     @ApiOperation("修改用户名")
     public ApiResult<Void> modifyName(@Valid @RequestBody ModifyNameReq req) {
         userService.modifyName(RequestHolder.get().getUid(),req);

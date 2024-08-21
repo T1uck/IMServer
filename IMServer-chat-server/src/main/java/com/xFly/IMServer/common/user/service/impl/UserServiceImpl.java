@@ -2,6 +2,7 @@ package com.xFly.IMServer.common.user.service.impl;
 
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xFly.IMServer.common.common.annotation.RedissonLock;
 import com.xFly.IMServer.common.common.utils.AssertUtil;
 import com.xFly.IMServer.common.user.dao.ItemConfigDao;
 import com.xFly.IMServer.common.user.domain.entity.ItemConfig;
@@ -65,6 +66,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements U
      */
     @Override
     @Transactional
+    @RedissonLock(key = "#uid")
     public void modifyName(Long uid, ModifyNameReq req) {
         // 判断名字是否重复
         String newName = req.getName();

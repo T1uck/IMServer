@@ -6,6 +6,7 @@ import com.xFly.IMServer.common.IMServerCustomApplication;
 import com.xFly.IMServer.common.common.utils.RedisUtils;
 import com.xFly.IMServer.common.user.dao.UserDao;
 import com.xFly.IMServer.common.user.domain.entity.User;
+import com.xFly.IMServer.common.user.service.LoginService;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.websocketx.*;
@@ -27,6 +28,16 @@ public class DaoTest {
 
     @Resource
     private RedissonClient redissonClient;
+
+    @Resource
+    private LoginService loginService;
+
+    @Test
+    public void getToken() {
+        String login = loginService.login(11003L);
+        System.out.println(login);
+    }
+
     @Test
     public void Redisson() {
         RLock rLock = redissonClient.getLock("123");
