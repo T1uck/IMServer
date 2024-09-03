@@ -3,6 +3,7 @@ package com.xFly.IMServer.common.user.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xFly.IMServer.common.common.annotation.RedissonLock;
+import com.xFly.IMServer.common.common.event.UserRegisterEvent;
 import com.xFly.IMServer.common.common.utils.AssertUtil;
 import com.xFly.IMServer.common.user.dao.ItemConfigDao;
 import com.xFly.IMServer.common.user.domain.entity.ItemConfig;
@@ -20,6 +21,7 @@ import com.xFly.IMServer.common.user.mapper.user.UserMapper;
 import com.xFly.IMServer.common.user.service.UserService;
 import com.xFly.IMServer.common.user.service.adapter.UserAdapter;
 import com.xFly.IMServer.common.user.service.cache.ItemCache;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements U
     private ItemCache itemCache;
     @Resource
     private ItemConfigDao itemConfigDao;
+    @Resource
+    private ApplicationEventPublisher applicationEventPublisher;
+
     /**
      * 用户注册,需要获取id
      * @param user
@@ -45,6 +50,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements U
     @Override
     public void register(User user) {
         userDao.save(user);
+        // 发放物品
+        applicationEventPublisher.publishEvent(new UserRegisterEvent(this,user));
     }
 
     /**

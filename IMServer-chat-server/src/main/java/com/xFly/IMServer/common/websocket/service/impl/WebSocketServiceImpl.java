@@ -5,11 +5,12 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.xFly.IMServer.common.common.event.UserOnlineEvent;
 import com.xFly.IMServer.common.user.dao.UserDao;
 import com.xFly.IMServer.common.user.domain.entity.User;
 import com.xFly.IMServer.common.user.service.LoginService;
+import com.xFly.IMServer.common.websocket.NettyUtil;
 import com.xFly.IMServer.common.websocket.domain.dto.WSChannelExtraDTO;
-import com.xFly.IMServer.common.websocket.domain.enums.WSRespTypeEnum;
 import com.xFly.IMServer.common.websocket.domain.vo.resp.WSBaseResp;
 import com.xFly.IMServer.common.websocket.domain.vo.resp.WSLoginUrl;
 import com.xFly.IMServer.common.websocket.service.WebSocketService;
@@ -19,11 +20,13 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.SneakyThrows;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.Duration;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,6 +42,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     @Resource
     private LoginService loginService;
+
+    @Resource
+    private ApplicationEventPublisher applicationEventPublisher;
 
     /**
      * 所有已连接的websocket链接列表和一些额外参数
@@ -146,16 +152,20 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     /**
      * 推送登陆成功消息
-     * @param channel
-     * @param token
-     * @param user
+     * @param channel 通道
+     * @param token token
+     * @param user 用户信息
      */
     private void loginSuccessMsg(Channel channel, String token, User user) {
         // 保存channel对应uid
         WSChannelExtraDTO wsChannelExtraDTO = ONLINE_WS_MAP.get(channel);
         wsChannelExtraDTO.setUid(user.getId());
-        // todo: 用户上线成功的事件
+        // 推送成功的消息
         sendMsg(channel, WSAdapter.buildLoginSuccessResp(user, token));
+        // 用户上线成功的事件
+        user.setLastOptTime(new Date());
+        user.refreshIp(NettyUtil.getAttr(channel, NettyUtil.IP));
+        applicationEventPublisher.publishEvent(new UserOnlineEvent(this, user));
     }
 
     /**
