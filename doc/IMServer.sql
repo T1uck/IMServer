@@ -149,7 +149,7 @@ CREATE TABLE `role` (
   KEY `idx_update_time` (`update_time`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色表';
 insert into role(id,`name`) values(1,'超级管理员');
-insert into role(id,`name`) values(2,'抹茶群聊管理员');
+insert into role(id,`name`) values(2,'群聊管理员');
 
 DROP TABLE IF EXISTS `user_role`;
 CREATE TABLE `user_role` (

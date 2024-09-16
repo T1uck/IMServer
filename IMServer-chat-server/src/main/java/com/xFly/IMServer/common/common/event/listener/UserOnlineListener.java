@@ -5,6 +5,7 @@ import com.xFly.IMServer.common.user.dao.UserDao;
 import com.xFly.IMServer.common.user.domain.entity.User;
 import com.xFly.IMServer.common.user.domain.enums.ChatActiveStatusEnum;
 import com.xFly.IMServer.common.user.service.IpService;
+import com.xFly.IMServer.common.user.service.cache.UserCache;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -21,8 +22,9 @@ public class UserOnlineListener {
     @Resource
     private IpService ipService;
 
+
     @Async
-    @EventListener(classes = UserOnlineListener.class)
+    @EventListener(classes = UserOnlineEvent.class)
     public void saveDB(UserOnlineEvent event) {
         // 保存用户上线信息到数据库
         User user = event.getUser();

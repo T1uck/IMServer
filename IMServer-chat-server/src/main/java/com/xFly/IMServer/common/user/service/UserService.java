@@ -2,6 +2,7 @@ package com.xFly.IMServer.common.user.service;
 
 import com.xFly.IMServer.common.user.domain.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xFly.IMServer.common.user.domain.vo.Req.BlackUserReq;
 import com.xFly.IMServer.common.user.domain.vo.Req.ModifyNameReq;
 import com.xFly.IMServer.common.user.domain.vo.Req.WearingBadgeReq;
 import com.xFly.IMServer.common.user.domain.vo.Resp.BadgeResp;
@@ -49,4 +50,16 @@ public interface UserService extends IService<User> {
      * @param req
      */
     void wearingBadge(Long uid, WearingBadgeReq req);
+
+    /**
+     * 判断用户是否有权限
+     * @param uid
+     */
+    void hasPower(Long uid);
+
+    /**
+     * 拉黑目标用户
+     * @param req
+     */
+    void black(BlackUserReq req);
 }

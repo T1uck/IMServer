@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Description:
+ * Description: 用户登陆成功信息表
  */
 @Data
 @Builder

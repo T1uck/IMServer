@@ -1,5 +1,7 @@
 package com.xFly.IMServer.common.websocket.service;
 
+import com.xFly.IMServer.common.websocket.domain.vo.resp.WSBaseResp;
+import com.xFly.IMServer.common.websocket.domain.vo.resp.WSBlack;
 import io.netty.channel.Channel;
 
 public interface WebSocketService {
@@ -41,4 +43,11 @@ public interface WebSocketService {
      * @param token
      */
     void authorize(Channel channel, String token);
+
+    /**
+     * 发送消息桂全体用户
+     * @param resp 发送的消息体
+     * @param skipUid 需要跳过的人
+     */
+    void sendToAllOnline(WSBaseResp<?> resp, Long skipUid);
 }

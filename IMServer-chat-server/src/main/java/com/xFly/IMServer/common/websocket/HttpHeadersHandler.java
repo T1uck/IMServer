@@ -1,11 +1,9 @@
 package com.xFly.IMServer.common.websocket;
 
 import cn.hutool.core.net.url.UrlBuilder;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.util.concurrent.EventExecutorGroup;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.InetSocketAddress;

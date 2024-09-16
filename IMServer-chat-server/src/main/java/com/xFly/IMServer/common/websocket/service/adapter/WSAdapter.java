@@ -30,7 +30,7 @@ public class WSAdapter {
      * @param token
      * @return
      */
-    public static WSBaseResp<?> buildLoginSuccessResp(User user, String token) {
+    public static WSBaseResp<?> buildLoginSuccessResp(User user, String token, Boolean hasPower) {
         WSBaseResp<WSLoginSuccess> resp = new WSBaseResp<>();
         resp.setType(WSRespTypeEnum.LOGIN_SUCCESS.getType());
         WSLoginSuccess wsLoginSuccess = WSLoginSuccess.builder()
@@ -38,6 +38,7 @@ public class WSAdapter {
                 .name(user.getName())
                 .token(token)
                 .uid(user.getId())
+                .power(hasPower ? 1 : 0)
                 .build();
         resp.setData(wsLoginSuccess);
         return resp;

@@ -4,6 +4,7 @@ package com.xFly.IMServer.common.user.controller;
 import com.xFly.IMServer.common.common.domain.dto.RequestInfo;
 import com.xFly.IMServer.common.common.domain.vo.resp.ApiResult;
 import com.xFly.IMServer.common.common.utils.RequestHolder;
+import com.xFly.IMServer.common.user.domain.vo.Req.BlackUserReq;
 import com.xFly.IMServer.common.user.domain.vo.Req.ModifyNameReq;
 import com.xFly.IMServer.common.user.domain.vo.Req.WearingBadgeReq;
 import com.xFly.IMServer.common.user.domain.vo.Resp.BadgeResp;
@@ -54,6 +55,15 @@ public class UserController {
     @ApiOperation("佩戴徽章")
     public ApiResult<Void> wearingBadge(@Valid @RequestBody WearingBadgeReq req) {
         userService.wearingBadge(RequestHolder.get().getUid(), req);
+        return ApiResult.success();
+    }
+
+    @PutMapping("/black")
+    public ApiResult<Void> blackUser(@Valid @RequestBody BlackUserReq req) {
+        // 判断当前用户是否有权限进行拉黑操作
+        userService.hasPower(RequestHolder.get().getUid());
+        // 拉黑目标用户
+        userService.black(req);
         return ApiResult.success();
     }
 }

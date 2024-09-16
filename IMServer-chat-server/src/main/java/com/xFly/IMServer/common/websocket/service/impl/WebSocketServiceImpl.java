@@ -5,9 +5,12 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.xFly.IMServer.common.common.config.ThreadPoolConfig;
 import com.xFly.IMServer.common.common.event.UserOnlineEvent;
 import com.xFly.IMServer.common.user.dao.UserDao;
 import com.xFly.IMServer.common.user.domain.entity.User;
+import com.xFly.IMServer.common.user.domain.enums.RoleEnum;
+import com.xFly.IMServer.common.user.service.IRoleService;
 import com.xFly.IMServer.common.user.service.LoginService;
 import com.xFly.IMServer.common.websocket.NettyUtil;
 import com.xFly.IMServer.common.websocket.domain.dto.WSChannelExtraDTO;
@@ -20,8 +23,11 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.SneakyThrows;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
+import org.hibernate.validator.internal.util.stereotypes.ThreadSafe;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,6 +35,7 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
@@ -45,6 +52,13 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
+
+    @Resource
+    private IRoleService roleService;
+
+    @Resource
+    @Qualifier(ThreadPoolConfig.WS_EXECUTOR)
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     /**
      * 所有已连接的websocket链接列表和一些额外参数
@@ -149,6 +163,21 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
+    /**
+     * 发送推送消息给在线的人
+     * @param resp 发送的消息体
+     * @param skipUid 需要跳过的人
+     */
+    @Override
+    public void sendToAllOnline(WSBaseResp<?> resp, Long skipUid) {
+        ONLINE_WS_MAP.forEach((channel, wsChannelExtraDTO) -> {
+            if (ObjectUtil.isNotNull(skipUid) && skipUid.equals(wsChannelExtraDTO.getUid())){
+                return;
+            }
+            threadPoolTaskExecutor.execute(() -> sendMsg(channel, resp));
+        });
+    }
+
 
     /**
      * 推送登陆成功消息
@@ -160,8 +189,10 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 保存channel对应uid
         WSChannelExtraDTO wsChannelExtraDTO = ONLINE_WS_MAP.get(channel);
         wsChannelExtraDTO.setUid(user.getId());
+        // 获取用户角色是否为超级管理员
+        boolean hasPower = roleService.hasPower(user.getId(), RoleEnum.CHAT_MANAGER);
         // 推送成功的消息
-        sendMsg(channel, WSAdapter.buildLoginSuccessResp(user, token));
+        sendMsg(channel, WSAdapter.buildLoginSuccessResp(user, token, hasPower));
         // 用户上线成功的事件
         user.setLastOptTime(new Date());
         user.refreshIp(NettyUtil.getAttr(channel, NettyUtil.IP));

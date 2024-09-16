@@ -1,6 +1,7 @@
 package com.xFly.IMServer.common.user.domain.entity;
 
 import jodd.util.StringUtil;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,6 +10,7 @@ import java.util.Optional;
 /**
  * Description: 用户IP信息
  */
+@Data
 public class IpInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
